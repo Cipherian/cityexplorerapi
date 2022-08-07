@@ -1,0 +1,24 @@
+{
+  "name": "cityexplorerapi",
+  "version": "1.0.0",
+  "description": "city explorer backend",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cipherian/cityexplorerapi.git"
+  },
+  "author": "Daniel Brott",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cipherian/cityexplorerapi/issues"
+  },
+  "homepage": "https://github.com/Cipherian/cityexplorerapi#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1"
+  }
+}
