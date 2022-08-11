@@ -14,37 +14,22 @@ app.get("/", (request, response) => {
 });
 
 class Forecast {
-  constructor(type) {
-    const citySearch = weatherData.find(
-      (city) => city.city_name.toLowerCase() === type.toLowerCase()
-    );
-    this.city = citySearch;
-  }
-
-  getWeather() {
-   return this.city.data.map((day) => {
-      return {
-        day: day.valid_date,
-        description: day.weather.description,
-        lat:parseFloat(this.city.lat),
-        lon:parseFloat(this.city.lon),
-      }
-    });
+  constructor(obj) {
+    this.date = obj.datetime;
+    this.description = 'Low of ' + obj.low_temp + ', High of ' + obj.high_temp +  ' with ' + obj.weather.description.toLowerCase();
   }
 }
-app.get("/weather", (req, res, next) => {
-  try {
-    const { searchQuery, lat, lon } = req.query;
-    const cityForecast = new Forecast(searchQuery);
-    console.log(cityForecast);
-    const cityData = cityForecast.getWeather();
-    console.log(cityData);
-    res.send(cityData);
-  } catch (error) {
-    next(error.message);
-  }
-});
 
+app.get("/weather", (req, res) => {
+  let url = `https://api.weatherbit.io/v2.0/forecast/daily?days=3&lat=${req.query.lat}&lon=${req.query.lon}&key=${process.env.WEATHER_API_KEY}`;
+  axios.get(url).then(res => {
+    const weatherArray = res.data.data.map(
+      (forecast) => new Forecast(forecast)
+    );
+    console.log.forEach(weatherArray)
+    response.send(weatherArray);
+  });
+});
 //err handling
 
 app.use((error, request, response, next) => {
