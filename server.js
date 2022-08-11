@@ -1,6 +1,7 @@
 "use strict";
 
 const express = require("express");
+const axios = require("axios");
 const cors = require("cors");
 require("dotenv").config();
 const weatherData = require("./weather.json");
@@ -16,20 +17,36 @@ app.get("/", (request, response) => {
 class Forecast {
   constructor(obj) {
     this.date = obj.datetime;
-    this.description = 'Low of ' + obj.low_temp + ', High of ' + obj.high_temp +  ' with ' + obj.weather.description.toLowerCase();
+    this.description =
+      "Low of " +
+      obj.low_temp +
+      ", High of " +
+      obj.high_temp +
+      " with " +
+      obj.weather.description.toLowerCase();
   }
 }
 
-app.get("/weather", (req, res) => {
-  let url = `https://api.weatherbit.io/v2.0/forecast/daily?days=3&lat=${req.query.lat}&lon=${req.query.lon}&key=${process.env.WEATHER_API_KEY}`;
-  axios.get(url).then(res => {
-    const weatherArray = res.data.data.map(
+app.get("/Weather", getWeather);
+
+async function getWeather(req, res, next) {
+
+  const { searchQuery, lat, lon } = req.query;
+  let url = `https://api.weatherbit.io/v2.0/forecast/daily?days=7&units=I&lat=${lat}&lon=${lon}&city=${searchQuery}&key=${process.env.WEATHER_API_KEY}`;
+
+  try {
+    const weatherResponse = await axios.get(url);
+    const weatherArray = weatherResponse.data.data.map(
       (forecast) => new Forecast(forecast)
     );
-    console.log.forEach(weatherArray)
-    response.send(weatherArray);
-  });
-});
+    console.log(weatherArray);
+    res.send(weatherArray);
+  } catch (error) {
+    console.error(error)
+    next(error.message);
+  }
+}
+
 //err handling
 
 app.use((error, request, response, next) => {
